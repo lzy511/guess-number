@@ -3,96 +3,173 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>猜数字小游戏</title>
+<title>小熊猜数字</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
+
   body {
     font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: radial-gradient(circle at 15% 15%, #FFF7DA 0%, #FFE9A8 45%, #FFDB77 100%);
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 20px;
+    position: relative;
+    overflow-x: hidden;
   }
+  /* 背景上的小熊爪印装饰 */
+  .paw {
+    position: fixed;
+    font-size: 42px;
+    opacity: 0.18;
+    user-select: none;
+    pointer-events: none;
+  }
+  .paw.p1 { top: 8%;  left: 6%;  transform: rotate(-18deg); }
+  .paw.p2 { bottom: 10%; right: 8%; transform: rotate(22deg); }
+  .paw.p3 { top: 62%; left: 10%; transform: rotate(8deg); font-size: 30px; }
+  .paw.p4 { top: 18%; right: 12%; transform: rotate(-30deg); font-size: 34px; }
+
   .card {
-    background: #fff;
-    border-radius: 16px;
-    padding: 32px;
+    background: #FFFDF5;
+    border: 4px solid #FFD54F;
+    border-radius: 28px;
+    padding: 28px 26px 24px;
     width: 100%;
-    max-width: 420px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    max-width: 430px;
+    box-shadow: 0 18px 45px rgba(180, 125, 20, 0.25);
+    position: relative;
+    z-index: 1;
   }
+
+  .bear-head {
+    text-align: center;
+    font-size: 52px;
+    line-height: 1;
+    margin-bottom: 6px;
+    animation: bob 2.4s ease-in-out infinite;
+  }
+  @keyframes bob {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-6px); }
+  }
+
   h1 {
     text-align: center;
     font-size: 24px;
-    color: #333;
-    margin-bottom: 8px;
+    color: #7A4E0C;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
   }
   .subtitle {
     text-align: center;
-    color: #888;
-    font-size: 14px;
-    margin-bottom: 24px;
+    color: #B08A4A;
+    font-size: 13.5px;
+    margin-bottom: 18px;
   }
-  .status {
+
+  .stats {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .stat {
+    flex: 1;
+    background: #FFF3CC;
+    border: 2px solid #FFE08A;
+    border-radius: 16px;
+    padding: 10px 6px;
     text-align: center;
-    font-size: 15px;
-    color: #555;
-    background: #f5f6fa;
-    border-radius: 10px;
-    padding: 12px;
-    margin-bottom: 16px;
-    line-height: 1.6;
   }
+  .stat .label {
+    display: block;
+    font-size: 12px;
+    color: #B08A4A;
+    margin-bottom: 4px;
+  }
+  .stat .value {
+    display: block;
+    font-size: 20px;
+    font-weight: bold;
+    color: #E08A00;
+    font-variant-numeric: tabular-nums;
+  }
+
   .hint {
     text-align: center;
-    font-size: 18px;
+    font-size: 17px;
     font-weight: bold;
-    min-height: 28px;
-    margin-bottom: 16px;
+    min-height: 26px;
+    margin-bottom: 14px;
+    color: #7A4E0C;
   }
-  .hint.high { color: #e74c3c; }
-  .hint.low  { color: #2980b9; }
-  .hint.win  { color: #27ae60; }
-  .hint.lose { color: #e67e22; }
+  .hint.high { color: #E4572E; }
+  .hint.low  { color: #2F8FBF; }
+  .hint.win  { color: #3FA34D; }
+  .hint.lose { color: #C2703A; }
+
   .input-row {
     display: flex;
     gap: 10px;
-    margin-bottom: 20px;
+    margin-bottom: 14px;
   }
   input {
     flex: 1;
+    min-width: 0;
     padding: 12px 14px;
     font-size: 18px;
-    border: 2px solid #ddd;
-    border-radius: 10px;
+    color: #7A4E0C;
+    background: #FFFCF0;
+    border: 3px solid #FFE08A;
+    border-radius: 16px;
     outline: none;
-    transition: border-color 0.2s;
+    transition: border-color 0.2s, box-shadow 0.2s;
   }
-  input:focus { border-color: #667eea; }
-  input:disabled { background: #f0f0f0; }
+  input::placeholder { color: #C9AC70; font-size: 15px; }
+  input:focus { border-color: #F5A623; box-shadow: 0 0 0 4px rgba(245, 166, 35, 0.18); }
+  input:disabled { background: #F5F0E2; }
+
   button {
-    padding: 12px 20px;
-    font-size: 16px;
     border: none;
-    border-radius: 10px;
     cursor: pointer;
-    color: #fff;
-    transition: opacity 0.2s;
+    font-family: inherit;
+    transition: transform 0.12s, box-shadow 0.2s, opacity 0.2s;
   }
-  button:hover { opacity: 0.85; }
-  button:disabled { cursor: not-allowed; opacity: 0.5; }
-  #guessBtn { background: #667eea; }
-  #resetBtn { background: #95a5a6; width: 100%; }
+  button:active:not(:disabled) { transform: scale(0.97); }
+  button:disabled { cursor: not-allowed; opacity: 0.55; }
+
+  #guessBtn {
+    padding: 12px 22px;
+    font-size: 17px;
+    font-weight: bold;
+    color: #fff;
+    background: linear-gradient(180deg, #FFC13B 0%, #F5A623 100%);
+    border-radius: 16px;
+    box-shadow: 0 4px 0 #D98C00;
+  }
+  #guessBtn:hover:not(:disabled) { box-shadow: 0 4px 0 #D98C00, 0 6px 16px rgba(245,166,35,0.4); }
+
+  #resetBtn {
+    width: 100%;
+    padding: 11px;
+    font-size: 15px;
+    font-weight: bold;
+    color: #8A5E14;
+    background: #FFF0BF;
+    border: 2px dashed #FFD54F;
+    border-radius: 16px;
+  }
+  #resetBtn:hover { background: #FFE9A8; }
+
   .history-title {
-    font-size: 14px;
-    color: #888;
-    margin-bottom: 8px;
+    font-size: 13.5px;
+    color: #B08A4A;
+    margin: 18px 0 8px;
   }
   .history {
     list-style: none;
-    max-height: 160px;
+    max-height: 150px;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
@@ -102,59 +179,207 @@
     display: flex;
     justify-content: space-between;
     padding: 8px 12px;
-    background: #f8f9fb;
-    border-radius: 8px;
-    font-size: 14px;
-    color: #444;
+    background: #FFF7E0;
+    border-radius: 12px;
+    font-size: 13.5px;
+    color: #7A4E0C;
   }
-  .history .tag-high { color: #e74c3c; font-weight: bold; }
-  .history .tag-low  { color: #2980b9; font-weight: bold; }
-  .history .tag-hit  { color: #27ae60; font-weight: bold; }
+  .history .empty {
+    color: #C9AC70;
+    justify-content: center;
+  }
+  .tag-high { color: #E4572E; font-weight: bold; }
+  .tag-low  { color: #2F8FBF; font-weight: bold; }
+  .tag-hit  { color: #3FA34D; font-weight: bold; }
+
+  /* ---------- 胜利/失败弹窗 ---------- */
+  .modal-mask {
+    position: fixed;
+    inset: 0;
+    background: rgba(122, 78, 12, 0.35);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 10;
+  }
+  .modal-mask.show { display: flex; }
+
+  .modal {
+    background: #FFFDF5;
+    border: 4px solid #FFD54F;
+    border-radius: 26px;
+    padding: 26px 24px 22px;
+    width: 100%;
+    max-width: 320px;
+    text-align: center;
+    box-shadow: 0 20px 50px rgba(120, 80, 10, 0.35);
+    animation: pop 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes pop {
+    0%   { transform: scale(0.7); opacity: 0; }
+    100% { transform: scale(1);   opacity: 1; }
+  }
+  .modal .emoji { font-size: 56px; line-height: 1; margin-bottom: 8px; }
+  .modal h2 { font-size: 21px; color: #7A4E0C; margin-bottom: 8px; }
+  .modal .msg { font-size: 14px; color: #A98445; line-height: 1.7; margin-bottom: 14px; }
+  .modal .msg b { color: #E08A00; font-size: 16px; }
+  .modal .summary {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .modal .summary div {
+    flex: 1;
+    background: #FFF3CC;
+    border-radius: 14px;
+    padding: 10px 4px;
+    font-size: 12px;
+    color: #B08A4A;
+  }
+  .modal .summary div b {
+    display: block;
+    font-size: 18px;
+    color: #E08A00;
+    margin-top: 3px;
+  }
+  .modal button {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+    background: linear-gradient(180deg, #FFC13B 0%, #F5A623 100%);
+    border-radius: 16px;
+    box-shadow: 0 4px 0 #D98C00;
+  }
 </style>
 </head>
 <body>
-  <div class="card">
-    <h1>🎯 猜数字</h1>
-    <p class="subtitle">我心里藏了一个 1 ~ 100 的数，你有 6 次机会</p>
+  <span class="paw p1">🐾</span>
+  <span class="paw p2">🐾</span>
+  <span class="paw p3">🐾</span>
+  <span class="paw p4">🐾</span>
 
-    <div class="status" id="status">剩余次数：<b id="left">6</b> / 6</div>
-    <div class="hint" id="hint"></div>
+  <div class="card">
+    <div class="bear-head">🐻</div>
+    <h1>小熊猜数字</h1>
+    <p class="subtitle">我想了一个 1 ~ 100 的数，6 次以内猜到它吧！</p>
+
+    <div class="stats">
+      <div class="stat">
+        <span class="label">剩余机会</span>
+        <span class="value" id="left">6</span>
+      </div>
+      <div class="stat">
+        <span class="label">已猜步数</span>
+        <span class="value" id="used">0</span>
+      </div>
+      <div class="stat">
+        <span class="label">用时</span>
+        <span class="value" id="time">00:00</span>
+      </div>
+    </div>
+
+    <div class="hint" id="hint">第一次猜的时候开始计时哦 🍯</div>
 
     <div class="input-row">
       <input type="number" id="guessInput" min="1" max="100" placeholder="输入 1~100 的整数">
       <button id="guessBtn">猜！</button>
     </div>
 
-    <button id="resetBtn">重置游戏</button>
+    <button id="resetBtn">🔄 重新开始</button>
 
-    <p class="history-title" style="margin-top:20px;">📜 猜测记录</p>
-    <ul class="history" id="history"></ul>
+    <p class="history-title">📜 猜测记录</p>
+    <ul class="history" id="history">
+      <li class="empty">还没有猜过，勇敢试第一个吧～</li>
+    </ul>
+  </div>
+
+  <!-- 胜利 / 失败弹窗 -->
+  <div class="modal-mask" id="modalMask">
+    <div class="modal">
+      <div class="emoji" id="modalEmoji">🎉</div>
+      <h2 id="modalTitle">猜对啦！</h2>
+      <p class="msg" id="modalMsg"></p>
+      <div class="summary">
+        <div>用了步数<b id="modalSteps">0</b></div>
+        <div>用时<b id="modalTime">00:00</b></div>
+      </div>
+      <button id="modalBtn">🐻 再来一局</button>
+    </div>
   </div>
 
 <script>
-  var answer = Math.floor(Math.random() * 100) + 1;
-  var left = 6;
-  var gameOver = false;
+  var MAX_CHANCE = 6;
 
-  var input = document.getElementById('guessInput');
-  var guessBtn = document.getElementById('guessBtn');
-  var resetBtn = document.getElementById('resetBtn');
-  var leftEl = document.getElementById('left');
-  var hintEl = document.getElementById('hint');
-  var statusEl = document.getElementById('status');
+  var answer, left, used, gameOver, timerId, startTime, elapsed, started;
+
+  var input     = document.getElementById('guessInput');
+  var guessBtn  = document.getElementById('guessBtn');
+  var resetBtn  = document.getElementById('resetBtn');
+  var leftEl    = document.getElementById('left');
+  var usedEl    = document.getElementById('used');
+  var timeEl    = document.getElementById('time');
+  var hintEl    = document.getElementById('hint');
   var historyEl = document.getElementById('history');
+  var mask      = document.getElementById('modalMask');
+  var modalEmoji = document.getElementById('modalEmoji');
+  var modalTitle = document.getElementById('modalTitle');
+  var modalMsg   = document.getElementById('modalMsg');
+  var modalSteps = document.getElementById('modalSteps');
+  var modalTime  = document.getElementById('modalTime');
+  var modalBtn   = document.getElementById('modalBtn');
 
+  /* ---------- 计时器 ---------- */
+  function fmt(ms) {
+    var total = Math.floor(ms / 1000);
+    var m = Math.floor(total / 60);
+    var s = total % 60;
+    return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+  }
+
+  function startTimer() {
+    if (started) return;
+    started = true;
+    startTime = Date.now();
+    timerId = setInterval(function () {
+      elapsed = Date.now() - startTime;
+      timeEl.textContent = fmt(elapsed);
+    }, 200);
+  }
+
+  function stopTimer() {
+    if (timerId) { clearInterval(timerId); timerId = null; }
+  }
+
+  /* ---------- 提示与记录 ---------- */
   function setHint(text, cls) {
     hintEl.textContent = text;
     hintEl.className = 'hint ' + (cls || '');
   }
 
   function addHistory(n, tag, cls) {
+    if (historyEl.querySelector('.empty')) historyEl.innerHTML = '';
     var li = document.createElement('li');
-    li.innerHTML = '<span>第 ' + (6 - left) + ' 次：' + n + '</span><span class="' + cls + '">' + tag + '</span>';
+    li.innerHTML = '<span>第 ' + used + ' 猜：' + n + '</span><span class="' + cls + '">' + tag + '</span>';
     historyEl.appendChild(li);
+    historyEl.scrollTop = historyEl.scrollHeight;
   }
 
+  /* ---------- 弹窗 ---------- */
+  function showModal(isWin, msg) {
+    modalEmoji.textContent = isWin ? '🎉🐻' : '🐻💤';
+    modalTitle.textContent = isWin ? '猜对啦！你好厉害' : '机会用完了……';
+    modalMsg.innerHTML = msg;
+    modalSteps.textContent = used;
+    modalTime.textContent = fmt(elapsed);
+    mask.classList.add('show');
+  }
+
+  function hideModal() { mask.classList.remove('show'); }
+
+  /* ---------- 核心逻辑 ---------- */
   function guess() {
     if (gameOver) return;
 
@@ -163,55 +388,72 @@
 
     // 输入校验
     if (raw === '' || !Number.isInteger(n)) {
-      setHint('请输入一个整数哦', 'high');
+      setHint('要输入一个整数哦 🐾', 'high');
       return;
     }
     if (n < 1 || n > 100) {
-      setHint('范围是 1 ~ 100，超出啦', 'high');
+      setHint('范围是 1 ~ 100，超出小熊的蜂蜜罐啦', 'high');
       return;
     }
 
+    startTimer();
+
     left--;
+    used++;
     leftEl.textContent = left;
+    usedEl.textContent = used;
 
     if (n === answer) {
       setHint('🎉 猜对了！答案就是 ' + answer, 'win');
       addHistory(n, '✔ 猜中', 'tag-hit');
-      endGame();
+      endGame(true);
     } else if (n > answer) {
-      setHint(n + ' 偏大了，往小猜', 'high');
+      setHint(n + ' 偏大了，往小猜 ⬇️', 'high');
       addHistory(n, '↑ 偏大', 'tag-high');
     } else {
-      setHint(n + ' 偏小了，往大猜', 'low');
+      setHint(n + ' 偏小了，往大猜 ⬆️', 'low');
       addHistory(n, '↓ 偏小', 'tag-low');
     }
 
     if (left <= 0 && !gameOver) {
       setHint('😅 次数用完了，答案是 ' + answer, 'lose');
-      endGame();
+      endGame(false);
     }
 
     input.value = '';
     input.focus();
   }
 
-  function endGame() {
+  function endGame(isWin) {
     gameOver = true;
+    stopTimer();
     input.disabled = true;
     guessBtn.disabled = true;
-    statusEl.innerHTML = '游戏结束，点下面的按钮重新开始';
+
+    if (isWin) {
+      showModal(true, '你只用了 <b>' + used + '</b> 步就找到了答案 <b>' + answer + '</b>，小熊为你鼓掌 👏');
+    } else {
+      showModal(false, '正确答案是 <b>' + answer + '</b>，差一点点，再来一局吧 🍯');
+    }
   }
 
   function reset() {
+    stopTimer();
+    hideModal();
+
     answer = Math.floor(Math.random() * 100) + 1;
-    left = 6;
+    left = MAX_CHANCE;
+    used = 0;
+    elapsed = 0;
+    started = false;
     gameOver = false;
+
     leftEl.textContent = left;
-    statusEl.innerHTML = '剩余次数：<b id="left">6</b> / 6';
-    // 重新绑定更新后的元素
-    leftEl = document.getElementById('left');
-    setHint('', '');
-    historyEl.innerHTML = '';
+    usedEl.textContent = used;
+    timeEl.textContent = '00:00';
+    setHint('第一次猜的时候开始计时哦 🍯', '');
+    historyEl.innerHTML = '<li class="empty">还没有猜过，勇敢试第一个吧～</li>';
+
     input.disabled = false;
     guessBtn.disabled = false;
     input.value = '';
@@ -220,9 +462,12 @@
 
   guessBtn.addEventListener('click', guess);
   resetBtn.addEventListener('click', reset);
+  modalBtn.addEventListener('click', reset);
   input.addEventListener('keydown', function (e) {
     if (e.key === 'Enter') guess();
   });
+
+  reset();
 </script>
 </body>
 </html>
