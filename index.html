@@ -5,50 +5,89 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>小熊猜数字</title>
 <style>
+  :root {
+    --honey:        #F2A93B;
+    --honey-deep:   #D98C00;
+    --honey-light:  #FFE0A0;
+    --cream:        #FFFDF6;
+    --ink:          #5F4212;
+    --muted:        #A98450;
+    --line:         #FFE3A0;
+  }
+
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
-    font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
-    background: radial-gradient(circle at 15% 15%, #FFF7DA 0%, #FFE9A8 45%, #FFDB77 100%);
+    font-family: "Microsoft YaHei", "PingFang SC", "Segoe UI", sans-serif;
+    background:
+      radial-gradient(circle at 15% 8%,  #FFFEF9 0%, rgba(255,254,249,0) 52%),
+      radial-gradient(circle at 85% 92%, #FFE7A8 0%, rgba(255,231,168,0) 50%),
+      linear-gradient(168deg, #FFFAF0 0%, #FFEDBE 58%, #FFDE95 100%);
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 20px;
-    position: relative;
-    overflow-x: hidden;
+    padding: 24px 20px;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
   }
-  /* 背景上的小熊爪印装饰 */
-  .paw {
-    position: fixed;
-    font-size: 42px;
-    opacity: 0.18;
-    user-select: none;
-    pointer-events: none;
-  }
-  .paw.p1 { top: 8%;  left: 6%;  transform: rotate(-18deg); }
-  .paw.p2 { bottom: 10%; right: 8%; transform: rotate(22deg); }
-  .paw.p3 { top: 62%; left: 10%; transform: rotate(8deg); font-size: 30px; }
-  .paw.p4 { top: 18%; right: 12%; transform: rotate(-30deg); font-size: 34px; }
 
+  /* 背景柔光斑 */
+  .blob {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(52px);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .blob.b1 { width: 220px; height: 220px; background: #FFD98A; opacity: .6;  top: -70px;  left: -60px; }
+  .blob.b2 { width: 190px; height: 190px; background: #C9E7D2; opacity: .45; bottom: -70px; right: -50px; }
+  .blob.b3 { width: 160px; height: 160px; background: #FFE0D0; opacity: .5;  top: 56%;   left: -70px; }
+
+  /* ============ 主卡片 ============ */
   .card {
-    background: #FFFDF5;
-    border: 4px solid #FFD54F;
-    border-radius: 28px;
-    padding: 28px 26px 24px;
-    width: 100%;
-    max-width: 430px;
-    box-shadow: 0 18px 45px rgba(180, 125, 20, 0.25);
     position: relative;
     z-index: 1;
+    width: 100%;
+    max-width: 424px;
+    background: linear-gradient(180deg, #FFFFFF 0%, var(--cream) 100%);
+    border: 3px solid rgba(255, 214, 120, 0.9);
+    border-radius: 32px;
+    padding: 30px 26px 24px;
+    box-shadow:
+      0 26px 60px rgba(176, 126, 26, 0.18),
+      0 4px 14px rgba(176, 126, 26, 0.08),
+      0 1px 0 #FFFFFF inset;
+  }
+  /* 卡片顶部一小条"蜂蜜"装饰 */
+  .card::before {
+    content: "";
+    position: absolute;
+    top: -3px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 96px;
+    height: 5px;
+    border-radius: 0 0 8px 8px;
+    background: linear-gradient(90deg, #FFD06A, var(--honey), #FFD06A);
+    opacity: .85;
   }
 
-  .bear-head {
-    text-align: center;
-    font-size: 52px;
+  /* ============ 顶部小熊 ============ */
+  .mascot {
+    width: 84px;
+    height: 84px;
+    margin: 0 auto 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 44px;
     line-height: 1;
-    margin-bottom: 6px;
-    animation: bob 2.4s ease-in-out infinite;
+    border-radius: 50%;
+    background: radial-gradient(circle at 50% 38%, #FFF6D8 0%, #FFE49F 100%);
+    border: 3px solid #FFEBB6;
+    box-shadow: 0 10px 22px rgba(210, 155, 40, 0.22), 0 1px 0 #FFF inset;
+    animation: bob 2.8s ease-in-out infinite;
   }
   @keyframes bob {
     0%, 100% { transform: translateY(0); }
@@ -57,115 +96,167 @@
 
   h1 {
     text-align: center;
-    font-size: 24px;
-    color: #7A4E0C;
-    letter-spacing: 1px;
-    margin-bottom: 6px;
+    font-size: 25px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: var(--ink);
+    margin-bottom: 7px;
   }
   .subtitle {
     text-align: center;
-    color: #B08A4A;
-    font-size: 13.5px;
-    margin-bottom: 18px;
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--muted);
+    margin-bottom: 20px;
   }
 
+  /* ============ 数据条 ============ */
   .stats {
     display: flex;
-    gap: 8px;
-    margin-bottom: 14px;
+    gap: 9px;
+    margin-bottom: 16px;
   }
   .stat {
     flex: 1;
-    background: #FFF3CC;
-    border: 2px solid #FFE08A;
-    border-radius: 16px;
-    padding: 10px 6px;
+    padding: 11px 4px 10px;
+    border-radius: 18px;
+    border: 2px solid;
     text-align: center;
+    transition: transform 0.25s;
+  }
+  .stat .ico {
+    display: block;
+    font-size: 13px;
+    margin-bottom: 3px;
+    opacity: .85;
   }
   .stat .label {
     display: block;
-    font-size: 12px;
-    color: #B08A4A;
-    margin-bottom: 4px;
+    font-size: 11px;
+    letter-spacing: .3px;
+    margin-bottom: 3px;
   }
   .stat .value {
     display: block;
     font-size: 20px;
-    font-weight: bold;
-    color: #E08A00;
+    font-weight: 700;
     font-variant-numeric: tabular-nums;
+    line-height: 1.1;
   }
+  .stat.s1 { background: linear-gradient(180deg, #FFF8E0, #FFF1C9); border-color: #FFE39C; }
+  .stat.s1 .label { color: #B58F4A; } .stat.s1 .value { color: #E08A00; }
+  .stat.s2 { background: linear-gradient(180deg, #FFF3E9, #FFEBDC); border-color: #FFD5B6; }
+  .stat.s2 .label { color: #C08F66; } .stat.s2 .value { color: #DE7B36; }
+  .stat.s3 { background: linear-gradient(180deg, #EDF8F1, #E4F3E9); border-color: #C6E6D2; }
+  .stat.s3 .label { color: #6F9C80; } .stat.s3 .value { color: #3F8F5F; }
 
+  /* ============ 提示语 ============ */
   .hint {
     text-align: center;
-    font-size: 17px;
-    font-weight: bold;
+    font-size: 16.5px;
+    font-weight: 700;
     min-height: 26px;
-    margin-bottom: 14px;
-    color: #7A4E0C;
+    margin-bottom: 15px;
+    color: var(--ink);
+    transition: color 0.2s;
   }
   .hint.high { color: #E4572E; }
-  .hint.low  { color: #2F8FBF; }
-  .hint.win  { color: #3FA34D; }
+  .hint.low  { color: #3C89B8; }
+  .hint.win  { color: #34A853; }
   .hint.lose { color: #C2703A; }
+  .hint.pop  { animation: hintIn 0.34s ease-out; }
+  @keyframes hintIn {
+    from { transform: translateY(6px) scale(.97); opacity: 0; }
+    to   { transform: translateY(0)   scale(1);   opacity: 1; }
+  }
 
+  /* ============ 输入区 ============ */
   .input-row {
     display: flex;
-    gap: 10px;
-    margin-bottom: 14px;
+    gap: 9px;
+    margin-bottom: 11px;
   }
   input {
     flex: 1;
     min-width: 0;
-    padding: 12px 14px;
-    font-size: 18px;
-    color: #7A4E0C;
-    background: #FFFCF0;
-    border: 3px solid #FFE08A;
-    border-radius: 16px;
+    padding: 13px 16px;
+    font-size: 17px;
+    font-family: inherit;
+    color: var(--ink);
+    background: #FFFEFA;
+    border: 3px solid var(--line);
+    border-radius: 17px;
     outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
   }
-  input::placeholder { color: #C9AC70; font-size: 15px; }
-  input:focus { border-color: #F5A623; box-shadow: 0 0 0 4px rgba(245, 166, 35, 0.18); }
-  input:disabled { background: #F5F0E2; }
+  input::placeholder { color: #C9AC70; font-size: 14px; }
+  input:focus {
+    border-color: var(--honey);
+    background: #FFFFFF;
+    box-shadow: 0 0 0 5px rgba(242, 169, 59, 0.15);
+  }
+  input:disabled { background: #F7F3E9; }
+  /* 输错时抖一下 */
+  input.shake { animation: shake 0.34s; }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25%      { transform: translateX(-6px); }
+    50%      { transform: translateX(5px); }
+    75%      { transform: translateX(-3px); }
+  }
 
   button {
     border: none;
-    cursor: pointer;
     font-family: inherit;
-    transition: transform 0.12s, box-shadow 0.2s, opacity 0.2s;
+    cursor: pointer;
+    transition: transform 0.12s, box-shadow 0.2s, filter 0.2s, background 0.2s;
   }
-  button:active:not(:disabled) { transform: scale(0.97); }
-  button:disabled { cursor: not-allowed; opacity: 0.55; }
+  button:disabled { cursor: not-allowed; opacity: .55; }
 
   #guessBtn {
-    padding: 12px 22px;
-    font-size: 17px;
-    font-weight: bold;
+    padding: 13px 21px;
+    font-size: 16.5px;
+    font-weight: 700;
+    letter-spacing: .5px;
     color: #fff;
-    background: linear-gradient(180deg, #FFC13B 0%, #F5A623 100%);
-    border-radius: 16px;
-    box-shadow: 0 4px 0 #D98C00;
+    background: linear-gradient(180deg, #FFCB55 0%, var(--honey) 100%);
+    border-radius: 17px;
+    box-shadow: 0 4px 0 var(--honey-deep), 0 8px 18px rgba(242, 169, 59, 0.28);
   }
-  #guessBtn:hover:not(:disabled) { box-shadow: 0 4px 0 #D98C00, 0 6px 16px rgba(245,166,35,0.4); }
+  #guessBtn:hover:not(:disabled) { filter: brightness(1.05); }
+  #guessBtn:active:not(:disabled) {
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 var(--honey-deep);
+  }
 
   #resetBtn {
     width: 100%;
-    padding: 11px;
-    font-size: 15px;
-    font-weight: bold;
+    padding: 12px;
+    font-size: 14.5px;
+    font-weight: 700;
     color: #8A5E14;
-    background: #FFF0BF;
-    border: 2px dashed #FFD54F;
-    border-radius: 16px;
+    background: #FFF8E2;
+    border: 2px dashed #FFD777;
+    border-radius: 17px;
   }
-  #resetBtn:hover { background: #FFE9A8; }
+  #resetBtn:hover { background: #FFEFC4; }
+  #resetBtn:active { transform: scale(0.985); }
 
+  /* ============ 记录 ============ */
   .history-title {
-    font-size: 13.5px;
-    color: #B08A4A;
-    margin: 18px 0 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12.5px;
+    color: var(--muted);
+    margin: 18px 0 9px;
+    letter-spacing: .3px;
+  }
+  .history-title::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--line), rgba(255, 227, 160, 0));
   }
   .history {
     list-style: none;
@@ -174,108 +265,179 @@
     display: flex;
     flex-direction: column;
     gap: 6px;
+    padding-right: 2px;
   }
   .history li {
     display: flex;
     justify-content: space-between;
-    padding: 8px 12px;
-    background: #FFF7E0;
+    align-items: center;
+    padding: 9px 13px;
+    background: #FFFDF6;
+    border: 1px solid #FFF3D2;
+    border-left: 4px solid var(--line);
     border-radius: 12px;
     font-size: 13.5px;
-    color: #7A4E0C;
+    color: var(--ink);
+    animation: itemIn 0.32s ease-out;
   }
-  .history .empty {
-    color: #C9AC70;
+  @keyframes itemIn {
+    from { transform: translateY(-6px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+  }
+  .history li.hit  { border-left-color: #9FD8B0; background: #F8FEF9; }
+  .history li.high { border-left-color: #FFC1AC; background: #FFF9F6; }
+  .history li.low  { border-left-color: #B6D9EE; background: #F7FCFF; }
+  .history li.empty {
     justify-content: center;
+    color: #C9AC70;
+    border-style: dashed;
+    border-left: 1px dashed #FFEBC0;
+    background: #FFFDF6;
+    animation: none;
   }
-  .tag-high { color: #E4572E; font-weight: bold; }
-  .tag-low  { color: #2F8FBF; font-weight: bold; }
-  .tag-hit  { color: #3FA34D; font-weight: bold; }
+  .tag-high { color: #E4572E; font-weight: 700; }
+  .tag-low  { color: #3C89B8; font-weight: 700; }
+  .tag-hit  { color: #34A853; font-weight: 700; }
 
-  /* ---------- 胜利/失败弹窗 ---------- */
+  /* ============ 胜利弹窗 ============ */
   .modal-mask {
     position: fixed;
     inset: 0;
-    background: rgba(122, 78, 12, 0.35);
     display: none;
     align-items: center;
     justify-content: center;
     padding: 20px;
-    z-index: 10;
+    background: rgba(95, 66, 18, 0.32);
+    backdrop-filter: blur(3px);
+    z-index: 30;
+    overflow: hidden;
   }
   .modal-mask.show { display: flex; }
 
   .modal {
-    background: #FFFDF5;
-    border: 4px solid #FFD54F;
-    border-radius: 26px;
-    padding: 26px 24px 22px;
+    position: relative;
+    z-index: 2;
     width: 100%;
-    max-width: 320px;
+    max-width: 324px;
+    padding: 26px 24px 22px;
     text-align: center;
-    box-shadow: 0 20px 50px rgba(120, 80, 10, 0.35);
-    animation: pop 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
+    border-radius: 30px;
+    border: 3px solid rgba(255, 214, 120, 0.95);
+    background: linear-gradient(180deg, #FFFFFF 0%, #FFFDF4 100%);
+    box-shadow: 0 26px 60px rgba(120, 80, 10, 0.32);
+    animation: modalIn 0.45s cubic-bezier(0.2, 1.25, 0.45, 1);
+  }
+  @keyframes modalIn {
+    0%   { transform: scale(0.72) translateY(14px); opacity: 0; }
+    100% { transform: scale(1)    translateY(0);    opacity: 1; }
+  }
+
+  .modal .medal {
+    width: 92px;
+    height: 92px;
+    margin: 0 auto 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 46px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 50% 35%, #FFF7DC 0%, #FFE29A 100%);
+    border: 3px solid #FFEBB6;
+    box-shadow: 0 10px 24px rgba(210, 155, 40, 0.25);
+    animation: pop 0.6s cubic-bezier(0.2, 1.4, 0.5, 1) 0.12s backwards;
   }
   @keyframes pop {
-    0%   { transform: scale(0.7); opacity: 0; }
-    100% { transform: scale(1);   opacity: 1; }
+    0%   { transform: scale(0.4) rotate(-16deg); }
+    100% { transform: scale(1)   rotate(0); }
   }
-  .modal .emoji { font-size: 56px; line-height: 1; margin-bottom: 8px; }
-  .modal h2 { font-size: 21px; color: #7A4E0C; margin-bottom: 8px; }
-  .modal .msg { font-size: 14px; color: #A98445; line-height: 1.7; margin-bottom: 14px; }
+  .modal h2 {
+    font-size: 21px;
+    color: var(--ink);
+    letter-spacing: .5px;
+    margin-bottom: 8px;
+  }
+  .modal .msg {
+    font-size: 13.5px;
+    line-height: 1.8;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
   .modal .msg b { color: #E08A00; font-size: 16px; }
+
   .modal .summary {
     display: flex;
-    gap: 8px;
+    gap: 9px;
     margin-bottom: 16px;
   }
   .modal .summary div {
     flex: 1;
-    background: #FFF3CC;
-    border-radius: 14px;
-    padding: 10px 4px;
-    font-size: 12px;
-    color: #B08A4A;
+    padding: 11px 4px;
+    font-size: 11.5px;
+    color: #B58F4A;
+    background: #FFF8E2;
+    border: 1.5px solid #FFEDC0;
+    border-radius: 15px;
   }
   .modal .summary div b {
     display: block;
-    font-size: 18px;
-    color: #E08A00;
     margin-top: 3px;
+    font-size: 19px;
+    color: #E08A00;
+    font-variant-numeric: tabular-nums;
   }
   .modal button {
     width: 100%;
-    padding: 12px;
-    font-size: 16px;
-    font-weight: bold;
+    padding: 13px;
+    font-size: 15.5px;
+    font-weight: 700;
     color: #fff;
-    background: linear-gradient(180deg, #FFC13B 0%, #F5A623 100%);
-    border-radius: 16px;
-    box-shadow: 0 4px 0 #D98C00;
+    background: linear-gradient(180deg, #FFCB55 0%, var(--honey) 100%);
+    border-radius: 17px;
+    box-shadow: 0 4px 0 var(--honey-deep), 0 8px 18px rgba(242, 169, 59, 0.3);
+  }
+  .modal button:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--honey-deep); }
+  .modal.lose .medal { background: radial-gradient(circle at 50% 35%, #F4F6F8 0%, #E3E9EE 100%); border-color: #E4EAF0; }
+  .modal.lose button { background: linear-gradient(180deg, #9FB2BF 0%, #7F94A3 100%); box-shadow: 0 4px 0 #67798A; }
+
+  /* 撒花 */
+  .confetti {
+    position: absolute;
+    top: -20px;
+    width: 9px;
+    height: 14px;
+    border-radius: 2px;
+    opacity: .95;
+    animation: fall linear forwards;
+  }
+  @keyframes fall {
+    0%   { transform: translateY(-30px) rotate(0deg);     opacity: 1; }
+    100% { transform: translateY(105vh) rotate(720deg);   opacity: .1; }
   }
 </style>
 </head>
 <body>
-  <span class="paw p1">🐾</span>
-  <span class="paw p2">🐾</span>
-  <span class="paw p3">🐾</span>
-  <span class="paw p4">🐾</span>
+  <div class="blob b1"></div>
+  <div class="blob b2"></div>
+  <div class="blob b3"></div>
 
   <div class="card">
-    <div class="bear-head">🐻</div>
+    <div class="mascot">🐻</div>
     <h1>小熊猜数字</h1>
-    <p class="subtitle">我想了一个 1 ~ 100 的数，6 次以内猜到它吧！</p>
+    <p class="subtitle">我心里藏了一个 1 ~ 100 的数<br>6 次机会内找到它吧</p>
 
     <div class="stats">
-      <div class="stat">
+      <div class="stat s1">
+        <span class="ico">🎯</span>
         <span class="label">剩余机会</span>
         <span class="value" id="left">6</span>
       </div>
-      <div class="stat">
+      <div class="stat s2">
+        <span class="ico">👣</span>
         <span class="label">已猜步数</span>
         <span class="value" id="used">0</span>
       </div>
-      <div class="stat">
+      <div class="stat s3">
+        <span class="ico">⏱</span>
         <span class="label">用时</span>
         <span class="value" id="time">00:00</span>
       </div>
@@ -296,10 +458,10 @@
     </ul>
   </div>
 
-  <!-- 胜利 / 失败弹窗 -->
+  <!-- 结果弹窗 -->
   <div class="modal-mask" id="modalMask">
-    <div class="modal">
-      <div class="emoji" id="modalEmoji">🎉</div>
+    <div class="modal" id="modal">
+      <div class="medal" id="modalMedal">🎉</div>
       <h2 id="modalTitle">猜对啦！</h2>
       <p class="msg" id="modalMsg"></p>
       <div class="summary">
@@ -315,30 +477,30 @@
 
   var answer, left, used, gameOver, timerId, startTime, elapsed, started;
 
-  var input     = document.getElementById('guessInput');
-  var guessBtn  = document.getElementById('guessBtn');
-  var resetBtn  = document.getElementById('resetBtn');
-  var leftEl    = document.getElementById('left');
-  var usedEl    = document.getElementById('used');
-  var timeEl    = document.getElementById('time');
-  var hintEl    = document.getElementById('hint');
-  var historyEl = document.getElementById('history');
-  var mask      = document.getElementById('modalMask');
-  var modalEmoji = document.getElementById('modalEmoji');
+  var input      = document.getElementById('guessInput');
+  var guessBtn   = document.getElementById('guessBtn');
+  var resetBtn   = document.getElementById('resetBtn');
+  var leftEl     = document.getElementById('left');
+  var usedEl     = document.getElementById('used');
+  var timeEl     = document.getElementById('time');
+  var hintEl     = document.getElementById('hint');
+  var historyEl  = document.getElementById('history');
+  var mask       = document.getElementById('modalMask');
+  var modal      = document.getElementById('modal');
+  var modalMedal = document.getElementById('modalMedal');
   var modalTitle = document.getElementById('modalTitle');
   var modalMsg   = document.getElementById('modalMsg');
   var modalSteps = document.getElementById('modalSteps');
   var modalTime  = document.getElementById('modalTime');
   var modalBtn   = document.getElementById('modalBtn');
 
-  /* ---------- 计时器 ---------- */
+  /* ---------- 计时 ---------- */
   function fmt(ms) {
-    var total = Math.floor(ms / 1000);
-    var m = Math.floor(total / 60);
-    var s = total % 60;
+    var t = Math.floor(ms / 1000);
+    var m = Math.floor(t / 60);
+    var s = t % 60;
     return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
   }
-
   function startTimer() {
     if (started) return;
     started = true;
@@ -348,36 +510,81 @@
       timeEl.textContent = fmt(elapsed);
     }, 200);
   }
-
   function stopTimer() {
     if (timerId) { clearInterval(timerId); timerId = null; }
   }
 
-  /* ---------- 提示与记录 ---------- */
+  /* ---------- 提示 ---------- */
   function setHint(text, cls) {
     hintEl.textContent = text;
     hintEl.className = 'hint ' + (cls || '');
+    void hintEl.offsetWidth;
+    hintEl.classList.add('pop');
   }
 
-  function addHistory(n, tag, cls) {
+  /* ---------- 输入框抖动 ---------- */
+  function shakeInput() {
+    input.classList.remove('shake');
+    void input.offsetWidth;
+    input.classList.add('shake');
+  }
+
+  /* ---------- 记录 ---------- */
+  function addHistory(n, tag, cls, rowCls) {
     if (historyEl.querySelector('.empty')) historyEl.innerHTML = '';
     var li = document.createElement('li');
+    li.className = rowCls || '';
     li.innerHTML = '<span>第 ' + used + ' 猜：' + n + '</span><span class="' + cls + '">' + tag + '</span>';
     historyEl.appendChild(li);
     historyEl.scrollTop = historyEl.scrollHeight;
   }
 
+  /* ---------- 撒花 ---------- */
+  var COLORS = ['#F2A93B', '#FFD06A', '#7FD1A8', '#7FBEE8', '#F58B7B', '#FFE9A8', '#C79BE8'];
+  function confetti(count) {
+    for (var i = 0; i < count; i++) {
+      var piece = document.createElement('span');
+      piece.className = 'confetti';
+      piece.style.left = Math.random() * 100 + '%';
+      piece.style.background = COLORS[Math.floor(Math.random() * COLORS.length)];
+      piece.style.animationDuration = (1.6 + Math.random() * 1.6) + 's';
+      piece.style.animationDelay = (Math.random() * 0.5) + 's';
+      piece.style.width = (6 + Math.random() * 6) + 'px';
+      piece.style.height = (10 + Math.random() * 8) + 'px';
+      piece.style.borderRadius = Math.random() > 0.6 ? '50%' : '2px';
+      mask.appendChild(piece);
+      (function (el) {
+        setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 4200);
+      })(piece);
+    }
+  }
+
   /* ---------- 弹窗 ---------- */
-  function showModal(isWin, msg) {
-    modalEmoji.textContent = isWin ? '🎉🐻' : '🐻💤';
-    modalTitle.textContent = isWin ? '猜对啦！你好厉害' : '机会用完了……';
-    modalMsg.innerHTML = msg;
+  function showModal(isWin) {
+    modal.classList.toggle('lose', !isWin);
+    modalMedal.textContent = isWin ? '🎉' : '💤';
+
+    if (isWin) {
+      modalTitle.textContent = '猜对啦！你好厉害';
+      modalMsg.innerHTML = '你只用了 <b>' + used + '</b> 步就找到了答案 <b>' + answer + '</b><br>小熊为你鼓掌 👏';
+      confetti(70);
+    } else {
+      modalTitle.textContent = '机会用完了……';
+      modalMsg.innerHTML = '正确答案是 <b>' + answer + '</b><br>差一点点，再来一局吧 🍯';
+    }
+
     modalSteps.textContent = used;
     modalTime.textContent = fmt(elapsed);
     mask.classList.add('show');
   }
 
-  function hideModal() { mask.classList.remove('show'); }
+  function hideModal() {
+    mask.classList.remove('show');
+    var pieces = mask.querySelectorAll('.confetti');
+    for (var i = 0; i < pieces.length; i++) {
+      if (pieces[i].parentNode) pieces[i].parentNode.removeChild(pieces[i]);
+    }
+  }
 
   /* ---------- 核心逻辑 ---------- */
   function guess() {
@@ -389,15 +596,16 @@
     // 输入校验
     if (raw === '' || !Number.isInteger(n)) {
       setHint('要输入一个整数哦 🐾', 'high');
+      shakeInput();
       return;
     }
     if (n < 1 || n > 100) {
-      setHint('范围是 1 ~ 100，超出小熊的蜂蜜罐啦', 'high');
+      setHint('范围是 1 ~ 100，超出蜂蜜罐啦', 'high');
+      shakeInput();
       return;
     }
 
     startTimer();
-
     left--;
     used++;
     leftEl.textContent = left;
@@ -405,14 +613,14 @@
 
     if (n === answer) {
       setHint('🎉 猜对了！答案就是 ' + answer, 'win');
-      addHistory(n, '✔ 猜中', 'tag-hit');
+      addHistory(n, '✔ 猜中', 'tag-hit', 'hit');
       endGame(true);
     } else if (n > answer) {
       setHint(n + ' 偏大了，往小猜 ⬇️', 'high');
-      addHistory(n, '↑ 偏大', 'tag-high');
+      addHistory(n, '↑ 偏大', 'tag-high', 'high');
     } else {
       setHint(n + ' 偏小了，往大猜 ⬆️', 'low');
-      addHistory(n, '↓ 偏小', 'tag-low');
+      addHistory(n, '↓ 偏小', 'tag-low', 'low');
     }
 
     if (left <= 0 && !gameOver) {
@@ -429,12 +637,8 @@
     stopTimer();
     input.disabled = true;
     guessBtn.disabled = true;
-
-    if (isWin) {
-      showModal(true, '你只用了 <b>' + used + '</b> 步就找到了答案 <b>' + answer + '</b>，小熊为你鼓掌 👏');
-    } else {
-      showModal(false, '正确答案是 <b>' + answer + '</b>，差一点点，再来一局吧 🍯');
-    }
+    // 稍微延迟一下，让最后一次提示和记录先显示出来，再弹胜利卡
+    setTimeout(function () { showModal(isWin); }, isWin ? 420 : 300);
   }
 
   function reset() {
